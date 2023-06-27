@@ -7,6 +7,9 @@ android {
     compileSdk 33
 
     defaultConfig {
+        viewBinding {
+            enabled = true
+        }
         applicationId "com.example.specialtasksofminiproject_03"
         minSdk 24
         targetSdk 33
