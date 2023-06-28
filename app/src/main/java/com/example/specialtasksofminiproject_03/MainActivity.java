@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     String[] permissions;
     ArrayList<Contact> contactList;
     spinnerAdapter spinnerAdapter;
+    public static final Uri CONTENT_URI = Uri.parse("content://com.my.content.provider/Quotes");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
             // what i ganna do when i have the permission
             contactList = getContactsList();
             setDataToSpinner(contactList);
+            loadingQuotesFromContentProvider();
         } else {
             if (shouldShowRequestPermissionRationale(permissions[0]) || shouldShowRequestPermissionRationale(permissions[1])) {
                 showAlertDialogue("Request for permissions" , "this app need them \n do you want to grant them ?" ,
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
                     // use the permission that you ask
                     contactList = getContactsList();
                     setDataToSpinner(contactList);
+                    loadingQuotesFromContentProvider();
                 } else {
                     if (!shouldShowRequestPermissionRationale(permissions[0])) {
                         showAlertDialogue("Request for permissions" ,
@@ -102,6 +105,23 @@ public class MainActivity extends AppCompatActivity {
     private void setDataToSpinner(ArrayList<Contact> contacts) {
         spinnerAdapter = new spinnerAdapter(contacts);
         mainBinding.contactSpinner.setAdapter(spinnerAdapter);
+    }
+
+    private void loadingQuotesFromContentProvider() {
+        Cursor cursor = getContentResolver().query(CONTENT_URI , null ,
+                null , null , null);
+
+        Log.e("TAG", "loadingQuotesFromContentProvider: " + CONTENT_URI );
+        // i still get that the cursor is null
+        if (cursor == null) {
+            Toast.makeText(this, "cursor is null", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        while (cursor.moveToNext()) {
+            mainBinding.quoteTv.setText(cursor.getString(1));
+            mainBinding.authorTv.setText(cursor.getString(2));
+        }
+        cursor.close();
     }
 
     private void showAlertDialogue(String title , String message , String positiveTitle , AlertDialog.OnClickListener positiveClick
